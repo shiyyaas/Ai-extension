@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Hello World Extension",
+  "name": "Ai extension",
   "version": "1.0",
-  "description": "My first Chrome extension!",
+  "description": "An extension used ai capabilites to make life better",
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_icon": "icons/shiyas.jpeg"
   },
-  "permissions": ["storage", "activeTab"]
+  "permissions": ["activeTab", "storage","scripting"],
+  "host_permissions": ["https://*/*", "http://*/*"]
 }

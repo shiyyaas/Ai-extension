@@ -5,7 +5,7 @@
   "description": "An extension used ai capabilites to make life better",
   "action": {
     "default_popup": "index.html",
-    "default_icon": "icons/shiyas.jpeg"
+    "default_icon": "./icons/icon.jpeg"
   },
   "permissions": ["activeTab", "storage","scripting"],
   "host_permissions": ["https://*/*", "http://*/*"]

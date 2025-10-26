@@ -14,12 +14,12 @@ actionBtn.addEventListener('click', async () => {
       // const session = await ai.languageModel.create();
       
       // Use it here...
-      console.log('AI is ready!');
+      alert('AI is ready!');
       
     } catch (error) {
-      console.error('Error creating AI session:', error);
+      alert('Error creating AI session:', error);
     }
   } else {
-    console.log('No user activation detected');
+    alert('No user activation detected');
   }
 });

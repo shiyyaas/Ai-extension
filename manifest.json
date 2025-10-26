@@ -8,7 +8,7 @@
     "storage"
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_icon": "Icons/shiyas.png"
   },
   "content_scripts": [

@@ -1,21 +1,34 @@
 // Get your button
 const actionBtn = document.getElementById('actionBtn'); // or however you select it
 
-document.getElementById('downloadButton').addEventListener('click', async () => {
-  try {
-    alert('Starting model download... This may take a while!');
+  const button = document.getElementById('downloadButton');
+  const progress = document.getElementById('progress');
+  const output = document.getElementById('output');
+
+  button.addEventListener('click', async () => {
+    output.textContent = 'Checking model availability...';
+    const availability = await LanguageModel.availability();
     
-    const session = await ai.languageModel.create();
-    
-    alert('Model downloaded and session created successfully!');
-    
-    // Now test it with a prompt
-    const result = await session.prompt('Say hello!');
-    
-    alert('AI response: ' + result);
-    
-  } catch (error) {
-    alert('Error: ' + error.message);
-    console.error('Full error:', error);
-  }
-});
+    if (availability === 'downloadable' || availability === 'downloading') {
+      output.textContent = 'Downloading model...';
+      progress.hidden = false;
+
+      const session = await LanguageModel.create({
+        monitor(m) {
+          m.addEventListener('downloadprogress', (e) => {
+            progress.value = e.loaded;
+            output.textContent = `Model download: ${(e.loaded * 100).toFixed(1)}%`;
+          });
+        }
+      });
+
+      output.textContent = 'Model ready to use!';
+      progress.hidden = true;
+    } 
+    else if (availability === 'available') {
+      output.textContent = 'Model already available.';
+    } 
+    else {
+      output.textContent = 'Model unavailable on this device.';
+    }
+  });

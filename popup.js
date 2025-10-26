@@ -1,34 +1,28 @@
 // Get your button
 const actionBtn = document.getElementById('actionBtn'); // or however you select it
 
-  const button = document.getElementById('downloadButton');
-  const progress = document.getElementById('progress');
-  const output = document.getElementById('output');
+   const button = document.getElementById('downloadButton');
 
   button.addEventListener('click', async () => {
-    output.textContent = 'Checking model availability...';
-    const availability = await LanguageModel.availability();
-    
-    if (availability === 'downloadable' || availability === 'downloading') {
-      output.textContent = 'Downloading model...';
-      progress.hidden = false;
+    try {
+      const availability = await LanguageModel.availability();
 
-      const session = await LanguageModel.create({
-        monitor(m) {
-          m.addEventListener('downloadprogress', (e) => {
-            progress.value = e.loaded;
-            output.textContent = `Model download: ${(e.loaded * 100).toFixed(1)}%`;
-          });
-        }
-      });
-
-      output.textContent = 'Model ready to use!';
-      progress.hidden = true;
-    } 
-    else if (availability === 'available') {
-      output.textContent = 'Model already available.';
-    } 
-    else {
-      output.textContent = 'Model unavailable on this device.';
+      if (availability === 'downloadable' || availability === 'downloading') {
+        console.log('Downloading model — please wait...');
+        await LanguageModel.create({
+          monitor(m) {
+            m.addEventListener('downloadprogress', (e) => {
+              console.log(`Progress: ${(e.loaded * 100).toFixed(1)}%`);
+            });
+          },
+        });
+        console.log('Model downloaded and ready to use!');
+      } else if (availability === 'available') {
+        console.log('Model already available.');
+      } else {
+        console.log('LanguageModel unavailable on this device.');
+      }
+    } catch (e) {
+      console.error('Error:', e);
     }
   });

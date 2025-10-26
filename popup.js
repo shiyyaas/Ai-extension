@@ -1,16 +1,21 @@
 // Get your button
 const actionBtn = document.getElementById('actionBtn'); // or however you select it
 
-// popup.js
 document.getElementById('downloadButton').addEventListener('click', async () => {
   try {
-    const session = await ai.languageModel.create();
-    console.log('Session created!', session);
+    alert('Starting model download... This may take a while!');
     
+    const session = await ai.languageModel.create();
+    
+    alert('Model downloaded and session created successfully!');
+    
+    // Now test it with a prompt
     const result = await session.prompt('Say hello!');
-    console.log('Response:', result);
+    
+    alert('AI response: ' + result);
     
   } catch (error) {
-    console.error('Error:', error);
+    alert('Error: ' + error.message);
+    console.error('Full error:', error);
   }
 });

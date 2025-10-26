@@ -8,10 +8,10 @@ actionBtn.addEventListener('click', async () => {
     try {
       // Now create your AI session
       // For example, with Summarizer:
-      const summarizer = await ai.summarizer.create();
+      //const summarizer = await ai.summarizer.create();
       
       // Or with Prompt API:
-      // const session = await ai.languageModel.create();
+      const session = await ai.languageModel.create();
       
       // Use it here...
       alert('AI is ready!');

@@ -6,9 +6,9 @@ let selectedText = '';
 // Initialize AI session
 async function initAI() {
   try {
-    const capabilities = await ai.languageModel.capabilities();
+    const capabilities = await LanguageModel.capabilities();
     if (capabilities.available === 'readily') {
-      session = await ai.languageModel.create();
+      session = await LanguageModel.create();
       console.log('Lumina AI initialized');
     }
   } catch (error) {

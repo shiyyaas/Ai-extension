@@ -1,34 +1,80 @@
-// Get your button
-const actionBtn = document.getElementById('actionBtn'); // or however you select it
+let session = null;
 
-  const button = document.getElementById('downloadButton');
+async function checkAIAvailability() {
+  const statusDiv = document.getElementById('status');
+  const downloadSection = document.getElementById('downloadSection');
 
-  button.addEventListener('click', async () => {
-    try {
-      const availability = await LanguageModel.availability();
+  try {
+    const availability = await ai.languageModel.capabilities();
 
-      if (availability === 'downloadable' || availability === 'downloading') {
-        console.log('Downloading model — please wait...');
-        await LanguageModel.create({
-          expectedInputs: [
-            { type: "text", languages: ["en"] } // input from system/user is English
-          ],
-          expectedOutputs: [
-            { type: "text", languages: ["en"] } // specify desired output language
-          ],
-          monitor(m) {
-            m.addEventListener("downloadprogress", (e) => {
-              console.log(`Progress: ${(e.loaded * 100).toFixed(1)}%`);
-            });
-          }
-        });
-        console.log('Model downloaded and ready to use!');
-      } else if (availability === 'available') {
-        console.log('Model already available.');
-      } else {
-        console.log('LanguageModel unavailable on this device.');
-      }
-    } catch (e) {
-      console.error('Error:', e);
+    if (availability.available === 'readily') {
+      statusDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+          <span class="text-sm text-gray-600">AI Ready • Select text to begin</span>
+        </div>
+      `;
+      // Initialize session
+      session = await ai.languageModel.create();
+    } else if (availability.available === 'after-download') {
+      statusDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 bg-orange-400 rounded-full"></div>
+          <span class="text-sm text-gray-600">AI model needs download</span>
+        </div>
+      `;
+      downloadSection.classList.remove('hidden');
+    } else {
+      statusDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+          <span class="text-sm text-gray-600">AI not available on this device</span>
+        </div>
+      `;
     }
-  });
+  } catch (error) {
+    statusDiv.innerHTML = `
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+        <span class="text-sm text-gray-600">Error checking AI: ${error.message}</span>
+      </div>
+    `;
+  }
+}
+
+document.getElementById('downloadButton')?.addEventListener('click', async () => {
+  const downloadButton = document.getElementById('downloadButton');
+  const downloadProgress = document.getElementById('downloadProgress');
+  const progressBar = document.getElementById('progressBar');
+  const progressPercent = document.getElementById('progressPercent');
+
+  try {
+    downloadButton.disabled = true;
+    downloadButton.textContent = 'Preparing download...';
+    downloadProgress.classList.remove('hidden');
+
+    session = await ai.languageModel.create({
+      monitor(m) {
+        m.addEventListener('downloadprogress', (e) => {
+          const percent = (e.loaded / e.total * 100).toFixed(1);
+          progressBar.style.width = `${percent}%`;
+          progressPercent.textContent = `${percent}%`;
+        });
+      }
+    });
+
+    downloadButton.textContent = '✓ Download Complete';
+    setTimeout(() => {
+      checkAIAvailability();
+      document.getElementById('downloadSection').classList.add('hidden');
+    }, 1500);
+
+  } catch (error) {
+    downloadButton.disabled = false;
+    downloadButton.textContent = 'Retry Download';
+    alert('Download failed: ' + error.message);
+  }
+});
+
+// Initialize
+checkAIAvailability();
